@@ -103,8 +103,7 @@ public class NiciraNvpApiIT {
         }
     }
 
-    @Test
-    public void testCRUDAcl() {
+    public Acl CRUDAclSetup() {
         Acl acl = new Acl();
         acl.setDisplayName("Acl" + timestamp);
 
@@ -126,6 +125,15 @@ public class NiciraNvpApiIT {
         tags.add(new NiciraNvpTag("nicira", "MyTag2"));
         // In the creation we don't get to specify UUID, href or schema: they don't exist yet
 
+        return acl;
+    }
+
+
+
+    @Test
+    public void testCRUDAclReadAll() {
+        Acl acl = CRUDAclSetup();
+
         try {
             acl = api.createAcl(acl);
 
@@ -143,8 +151,28 @@ public class NiciraNvpApiIT {
             }
             assertEquals("Read a ACL different from the one just created and updated", acl, scInList);
 
+
+            // We can now delete the new entity
+            api.deleteAcl(acl.getUuid());
+        } catch (final NiciraNvpApiException e) {
+            e.printStackTrace();
+            assertTrue("Errors in ACL CRUD", false);
+        }
+    }
+
+    @Test
+    public void testCRUDAclReadOne() {
+        Acl acl = CRUDAclSetup();
+
+        try {
+            acl = api.createAcl(acl);
+
+            // We can now update the new entity
+            acl.setDisplayName("UpdatedAcl" + timestamp);
+            api.updateAcl(acl, acl.getUuid());
+
             // Read them filtered by uuid (get one)
-            acls = api.findAcl(acl.getUuid());
+            List<Acl> acls = api.findAcl(acl.getUuid());
             assertEquals("Read a ACL different from the one just created and updated", acl, acls.get(0));
             assertEquals("Read a ACL filtered by unique id (UUID) with more than one item", 1, acls.size());
 
