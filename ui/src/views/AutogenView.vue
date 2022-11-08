@@ -847,6 +847,10 @@ export default {
         delete params.showunique
       }
 
+      if (['Admin'].includes(this.$store.getters.userInfo.roletype) && ['listVolumesMetrics', 'listVolumes'].includes(this.apiName)) {
+        params.listsystemvms = true
+      }
+
       this.loading = true
       if (this.$route.params && this.$route.params.id) {
         params.id = this.$route.params.id
@@ -876,6 +880,15 @@ export default {
       if (this.$showIcon()) {
         params.showIcon = true
       }
+
+      if (['listAnnotations', 'listRoles', 'listZonesMetrics', 'listPods',
+        'listClustersMetrics', 'listHostsMetrics', 'listStoragePoolsMetrics',
+        'listImageStores', 'listSystemVms', 'listManagementServers',
+        'listConfigurations', 'listHypervisorCapabilities',
+        'listAlerts', 'listNetworkOfferings', 'listVPCOfferings'].includes(this.apiName)) {
+        delete params.listall
+      }
+
       api(this.apiName, params).then(json => {
         var responseName
         var objectName
